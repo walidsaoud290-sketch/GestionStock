@@ -1,0 +1,35 @@
+@base_url = http://localhost:8099/commande
+POST {{base_url}}/create
+Content-Type: application/json
+
+{
+  "date_commande": "{{$datetime iso8601}}",
+  "status": "EN_COURS",
+  "client": {
+    "id": 4
+  },
+  "lignes": []
+}
+
+###
+PUT {{base_url}}/update/5
+Content-Type: application/json
+
+{
+    "date_commande": "{{$datetime iso8601}}",
+    "status": "EN_COURS",
+    "lignes": []
+}
+###
+DELETE {{base_url}}/delete/8
+###
+GET {{base_url}}/save?path=C:\Users\HP\Desktop\ProjetCinema\gestioncinema\src\clients.txt
+### 
+DELETE  {{base_url}}/delete/1
+###
+GET {{base_url}}/list
+
+
+/// table client
+### 
+GET http://localhost:8099/client/list
