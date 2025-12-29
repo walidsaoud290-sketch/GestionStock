@@ -11,10 +11,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Entity
 @NoArgsConstructor
+@ToString
 public class RowCommande implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,4 +33,10 @@ public class RowCommande implements Serializable{
 
     @Column(name = "prix_total")
     private double prixTotal = quantite*product.getPrix();
+
+    public RowCommande(int quantite, Commande commande, Product product) {
+        this.quantite = quantite;
+        this.commande = commande;
+        this.product = product;
+    }
 }
