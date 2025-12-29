@@ -9,8 +9,8 @@ import java.util.List;
 public class ReadFromFile extends Thread {
     private String path;
     private List<Object> result;
-    private volatile boolean completed = false;
-    private volatile Exception exception = null;
+    private boolean completed = false;
+    private Exception exception = null;
 
     public ReadFromFile(String path) {
         this.path = path;

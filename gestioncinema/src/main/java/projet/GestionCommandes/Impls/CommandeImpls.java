@@ -132,4 +132,9 @@ public class CommandeImpls implements CommandeService{
 					.body("Erreur: " + e.getMessage());
 		}
 	}
+	@Override
+	public void saviInFile(String path) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'saviInFile'");
+	}
 }

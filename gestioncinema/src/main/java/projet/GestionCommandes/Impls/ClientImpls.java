@@ -10,7 +10,6 @@ import projet.GestionCommandes.Entities.RowCommande;
 import projet.GestionCommandes.Repositorys.ClientRepository;
 import projet.GestionCommandes.Services.ClientService;
 import projet.GestionCommandes.threads.ReadFromFile;
-import projet.GestionCommandes.threads.SaveIntoFile;
 @Service
 public class ClientImpls implements ClientService{
 
@@ -135,30 +134,9 @@ public class ClientImpls implements ClientService{
     	}
 
     @Override
-    public ResponseEntity saveIntoFile(String path) {
-        try {
-            List<Client> clients = cr.findAll();
-            SaveIntoFile saveThread = new SaveIntoFile(clients, path);
-            saveThread.start();
-            
-            // Attendre la fin de l'écriture avec timeout (5 secondes)
-            saveThread.waitForCompletion();
-            
-            if (saveThread.hasError()) {
-                return ResponseEntity.status(500)
-                    .body("Erreur lors de l'écriture: " + saveThread.getException().getMessage());
-            }
-            
-            return ResponseEntity.ok("Données sauvegardées avec succès dans " + path);
-            
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return ResponseEntity.status(500)
-                .body("Écriture interrompue: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(500)
-                .body("Erreur: " + e.getMessage());
-        }
+    public ResponseEntity saviInFile(String path) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'saviInFile'");
     }
 
 	
