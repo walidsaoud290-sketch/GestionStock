@@ -57,8 +57,7 @@ public class RowCommandeController {
     }
 
     @GetMapping("/save")
-    public void save(@RequestParam String path){
-        rcr.savInFile(path);
+    public ResponseEntity saveInFile(@RequestParam String path){
+        return rcr.saveIntoFile(path);
     }
-
 }

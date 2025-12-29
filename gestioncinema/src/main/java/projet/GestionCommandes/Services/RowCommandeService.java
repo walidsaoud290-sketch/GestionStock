@@ -13,7 +13,6 @@ public interface RowCommandeService {
     ResponseEntity updateRowCommandes(Long id,RowCommande rowCommande);
     ResponseEntity displayRowById(Long id);
     ResponseEntity sortRowCommandesByTotal(boolean isASC);
-    void savInFile(String path);
     ResponseEntity readFromFile(String path);
-
+    ResponseEntity saveIntoFile(String path);
 }

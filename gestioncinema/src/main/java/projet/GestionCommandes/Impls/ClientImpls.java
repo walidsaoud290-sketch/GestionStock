@@ -135,11 +135,31 @@ public class ClientImpls implements ClientService{
     	}
 
     @Override
-	public ResponseEntity saviInFile(String path) {
-    	SaveIntoFile saveThread = new SaveIntoFile(cr.findAll(), path);
-        saveThread.start();
-        return ResponseEntity.ok("the data is sauvegarted in the file :"+path);
-	}
+    public ResponseEntity saveIntoFile(String path) {
+        try {
+            List<Client> clients = cr.findAll();
+            SaveIntoFile saveThread = new SaveIntoFile(clients, path);
+            saveThread.start();
+            
+            // Attendre la fin de l'écriture avec timeout (5 secondes)
+            saveThread.waitForCompletion();
+            
+            if (saveThread.hasError()) {
+                return ResponseEntity.status(500)
+                    .body("Erreur lors de l'écriture: " + saveThread.getException().getMessage());
+            }
+            
+            return ResponseEntity.ok("Données sauvegardées avec succès dans " + path);
+            
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(500)
+                .body("Écriture interrompue: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                .body("Erreur: " + e.getMessage());
+        }
+    }
 
 	
 }

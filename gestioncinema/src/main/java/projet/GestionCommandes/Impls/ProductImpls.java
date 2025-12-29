@@ -110,7 +110,29 @@ public class ProductImpls implements ProductService{
     	}
 
 	@Override
-public void saviInFile(String path) {
-    new SaveIntoFile(pr.findAll(), path).start();;
-}
+	public ResponseEntity saveIntoFile(String path) {
+		try {
+			List<Product> products = pr.findAll();
+			SaveIntoFile saveThread = new SaveIntoFile(products, path);
+			saveThread.start();
+			
+			// Attendre la fin de l'écriture avec timeout (5 secondes)
+			saveThread.waitForCompletion();
+			
+			if (saveThread.hasError()) {
+				return ResponseEntity.status(500)
+					.body("Erreur lors de l'écriture: " + saveThread.getException().getMessage());
+			}
+			
+			return ResponseEntity.ok("Données sauvegardées avec succès dans " + path);
+			
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return ResponseEntity.status(500)
+				.body("Écriture interrompue: " + e.getMessage());
+		} catch (Exception e) {
+			return ResponseEntity.status(500)
+				.body("Erreur: " + e.getMessage());
+		}
+	}
 }

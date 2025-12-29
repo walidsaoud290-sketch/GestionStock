@@ -49,8 +49,8 @@ public class ProductController {
     }
 
     @GetMapping("/save")
-    public void saveInFile(@RequestParam String path){
-        ps.saviInFile(path);
+    public ResponseEntity saveInFile(@RequestParam String path){
+        return ps.saveIntoFile(path);
     }
 
 }

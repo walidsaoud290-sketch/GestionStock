@@ -109,8 +109,27 @@ public class CommandeImpls implements CommandeService{
     	}
 
 	@Override
-	public void saviInFile(String path) {
-		new SaveIntoFile(cr.findAll(), path).start();
+	public ResponseEntity saveIntoFile(String path) {
+		try {
+			List<Commande> commandes = cr.findAll();
+			SaveIntoFile saveThread = new SaveIntoFile(commandes, path);
+			saveThread.start();
+			
+			// Attendre la fin de l'écriture avec timeout (5 secondes)
+			saveThread.waitForCompletion();
+			
+			if (saveThread.hasError()) {
+				return ResponseEntity.status(500)
+					.body("Erreur lors de l'écriture: " + saveThread.getException().getMessage());
+			}
+			return ResponseEntity.ok("Données sauvegardées avec succès dans " + path);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return ResponseEntity.status(500)
+					.body("Écriture interrompue: " + e.getMessage());
+		} catch (Exception e) {
+			return ResponseEntity.status(500)
+					.body("Erreur: " + e.getMessage());
+		}
 	}
-    
 }

@@ -16,4 +16,5 @@ public interface CommandeService {
     List<Commande> displayAllCommandes();
     ResponseEntity displayCommandeById(Long id);
     ResponseEntity readFromFile(String path);
+    ResponseEntity saveIntoFile(String path);
 }

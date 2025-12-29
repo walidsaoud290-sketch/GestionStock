@@ -59,9 +59,13 @@ public class ClientController {
         return cs.getClientByEmail(email);
     }
     
-
     @GetMapping("/save")
     public ResponseEntity savInFile(@RequestParam String path){
         return cs.saviInFile(path);
+    }
+
+    @GetMapping("/read")
+    public ResponseEntity readFromFile(@RequestParam String path){
+        return cs.readFromFile(path);
     }
 }
