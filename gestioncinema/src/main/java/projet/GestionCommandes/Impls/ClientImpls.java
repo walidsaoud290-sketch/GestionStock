@@ -9,8 +9,8 @@ import projet.GestionCommandes.Entities.Client;
 import projet.GestionCommandes.Entities.RowCommande;
 import projet.GestionCommandes.Repositorys.ClientRepository;
 import projet.GestionCommandes.Services.ClientService;
-import projet.GestionCommandes.threads.ReadThread;
-import projet.GestionCommandes.threads.SaveThread;
+import projet.GestionCommandes.threads.ReadFromFile;
+import projet.GestionCommandes.threads.SaveIntoFile;
 @Service
 public class ClientImpls implements ClientService{
 
@@ -100,7 +100,7 @@ public class ClientImpls implements ClientService{
     @Override
     public ResponseEntity readFromFile(String path) {
         try {
-            ReadThread readThread = new ReadThread(path);
+            ReadFromFile readThread = new ReadFromFile(path);
             readThread.start();
             
             // Attendre le résultat avec timeout (5 secondes)
@@ -136,7 +136,7 @@ public class ClientImpls implements ClientService{
 
     @Override
 	public ResponseEntity saviInFile(String path) {
-    	SaveThread saveThread = new SaveThread(cr.findAll(), path);
+    	SaveIntoFile saveThread = new SaveIntoFile(cr.findAll(), path);
         saveThread.start();
         return ResponseEntity.ok("the data is sauvegarted in the file :"+path);
 	}

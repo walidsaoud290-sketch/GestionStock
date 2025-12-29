@@ -4,13 +4,13 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-public class SaveThread extends Thread {
+public class SaveIntoFile extends Thread {
     private List<?> data;
     private String path;
     private volatile boolean completed = false;
     private volatile Exception exception = null;
 
-    public SaveThread(List<?> data, String path) {
+    public SaveIntoFile(List<?> data, String path) {
         this.data = data;
         this.path = path;
         this.setDaemon(true);

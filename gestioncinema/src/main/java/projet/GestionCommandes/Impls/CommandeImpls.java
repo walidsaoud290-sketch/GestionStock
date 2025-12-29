@@ -9,8 +9,8 @@ import projet.GestionCommandes.Entities.Commande;
 import projet.GestionCommandes.Entities.RowCommande;
 import projet.GestionCommandes.Repositorys.CommandeRepository;
 import projet.GestionCommandes.Services.CommandeService;
-import projet.GestionCommandes.threads.ReadThread;
-import projet.GestionCommandes.threads.SaveThread;
+import projet.GestionCommandes.threads.ReadFromFile;
+import projet.GestionCommandes.threads.SaveIntoFile;
 @Service
 public class CommandeImpls implements CommandeService{
 	@Autowired
@@ -74,7 +74,7 @@ public class CommandeImpls implements CommandeService{
 	@Override
     public ResponseEntity readFromFile(String path) {
         try {
-            ReadThread readThread = new ReadThread(path);
+            ReadFromFile readThread = new ReadFromFile(path);
             readThread.start();
             
             // Attendre le résultat avec timeout (5 secondes)
@@ -110,7 +110,7 @@ public class CommandeImpls implements CommandeService{
 
 	@Override
 	public void saviInFile(String path) {
-		new SaveThread(cr.findAll(), path).start();
+		new SaveIntoFile(cr.findAll(), path).start();
 	}
     
 }

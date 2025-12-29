@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 // waliiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiid
-public class ReadThread extends Thread {
+public class ReadFromFile extends Thread {
     private String path;
     private List<Object> result;
     private volatile boolean completed = false;
     private volatile Exception exception = null;
 
-    public ReadThread(String path) {
+    public ReadFromFile(String path) {
         this.path = path;
         this.result = new ArrayList<>();
         this.setDaemon(true);
@@ -22,12 +22,13 @@ public class ReadThread extends Thread {
     public void run() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path))) {
             Object data = ois.readObject();
-            
+            // le premiere chose hya n3rfou wach data hiya liste wela wahda
             if (data instanceof List) {
                 synchronized (this) {
                     result = new ArrayList<>((List<?>) data);
                 }
-            } else {
+            }// hna ki tkon wahda ghir zednaha l liste
+             else {
                 synchronized (this) {
                     result.add(data);
                 }

@@ -12,8 +12,8 @@ import projet.GestionCommandes.Entities.Product;
 import projet.GestionCommandes.Entities.RowCommande;
 import projet.GestionCommandes.Repositorys.ProductRepository;
 import projet.GestionCommandes.Services.ProductService;
-import projet.GestionCommandes.threads.ReadThread;
-import projet.GestionCommandes.threads.SaveThread;
+import projet.GestionCommandes.threads.ReadFromFile;
+import projet.GestionCommandes.threads.SaveIntoFile;
 @Service
 public class ProductImpls implements ProductService{
 	@Autowired
@@ -75,7 +75,7 @@ public class ProductImpls implements ProductService{
 	@Override
     public ResponseEntity readFromFile(String path) {
         try {
-            ReadThread readThread = new ReadThread(path);
+            ReadFromFile readThread = new ReadFromFile(path);
             readThread.start();
             
             // Attendre le résultat avec timeout (5 secondes)
@@ -111,6 +111,6 @@ public class ProductImpls implements ProductService{
 
 	@Override
 public void saviInFile(String path) {
-    new SaveThread(pr.findAll(), path).start();;
+    new SaveIntoFile(pr.findAll(), path).start();;
 }
 }
