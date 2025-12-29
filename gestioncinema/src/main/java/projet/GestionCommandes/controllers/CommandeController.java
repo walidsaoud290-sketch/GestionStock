@@ -25,32 +25,32 @@ public class CommandeController {
     private CommandeService cs;
 
     @GetMapping("/list")
-    public List<Commande> displayAllCommandes(){
+    public List<Commande> displayAllCommandes() {
         return cs.displayAllCommandes();
     }
 
     @GetMapping("/list/{id}")
-    public ResponseEntity displayCommandeById(@PathVariable Long id){
+    public ResponseEntity displayCommandeById(@PathVariable Long id) {
         return cs.displayCommandeById(id);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteCommandeById(@PathVariable Long id){
-       return cs.deleteCommandeById(id);
+    public ResponseEntity deleteCommandeById(@PathVariable Long id) {
+        return cs.deleteCommandeById(id);
     }
 
     @PostMapping("/create")
-    public ResponseEntity createCommande(@RequestBody Commande commande){
+    public ResponseEntity createCommande(@RequestBody Commande commande) {
         return cs.createCommande(commande);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity updateCommande(@RequestBody Commande commande,@PathVariable Long id){
+    public ResponseEntity updateCommande(@RequestBody Commande commande, @PathVariable Long id) {
         return cs.updateCommande(id, commande);
     }
 
     @GetMapping("/listStatus")
-    public ResponseEntity getByStatuList(@RequestParam String status){
+    public ResponseEntity getByStatuList(@RequestParam String status) {
         return cs.getByStatus(status);
     }
 
@@ -60,7 +60,7 @@ public class CommandeController {
     }
 
     @GetMapping("/read")
-    public ResponseEntity readFromFile(@RequestParam String path){
+    public ResponseEntity readFromFile(@RequestParam String path) {
         return cs.readFromFile(path);
     }
 }
