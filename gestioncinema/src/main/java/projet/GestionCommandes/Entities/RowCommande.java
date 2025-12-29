@@ -32,4 +32,10 @@ public class RowCommande implements Serializable{
 
     @Column(name = "prix_total")
     private double prixTotal = quantite*product.getPrix();
+
+    public RowCommande(int quantite, Commande commande, Product product) {
+        this.quantite = quantite;
+        this.commande = commande;
+        this.product = product;
+    }
 }
