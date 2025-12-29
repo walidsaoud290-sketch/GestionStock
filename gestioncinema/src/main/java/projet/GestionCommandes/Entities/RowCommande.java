@@ -2,8 +2,6 @@ package projet.GestionCommandes.Entities;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,6 +24,7 @@ public class RowCommande implements Serializable{
     @ManyToOne
     @JoinColumn(name = "commande_id")
     private Commande commande;
+    
     @ManyToOne
     @JoinColumn(name = "produit_id")
     private Product product;

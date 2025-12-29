@@ -28,12 +28,10 @@ public class SaveThread extends Thread {
         }
     }
 
-    public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
-        long startTime = System.currentTimeMillis();
-        while (!completed && (System.currentTimeMillis() - startTime) < timeoutMillis) {
-            Thread.sleep(100);
+    public void waitForCompletion() throws InterruptedException {
+        while (!completed) {
+            Thread.sleep(3000);
         }
-        return completed;
     }
 
     public boolean hasError() {
