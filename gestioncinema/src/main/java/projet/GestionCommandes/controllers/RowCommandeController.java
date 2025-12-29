@@ -60,4 +60,9 @@ public class RowCommandeController {
     public ResponseEntity saveInFile(@RequestParam String path){
         return rcr.saveIntoFile(path);
     }
+
+    @GetMapping("/read")
+    public ResponseEntity readFromFile(@RequestParam String path){
+        return rcr.readFromFile(path);
+    }
 }
