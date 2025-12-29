@@ -13,10 +13,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Entity
 @NoArgsConstructor
+@ToString
 public class RowCommande implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
