@@ -55,8 +55,8 @@ public class CommandeController {
     }
 
     @GetMapping("/save")
-    public void saveInFile(@RequestParam String path){
-        cs.saviInFile(path);
+    public ResponseEntity saveInFile(@RequestParam String path){
+        return cs.saveIntoFile(path);
     }
 
     @GetMapping("/read")

@@ -61,7 +61,7 @@ public class ClientController {
     
     @GetMapping("/save")
     public ResponseEntity savInFile(@RequestParam String path){
-        return cs.saviInFile(path);
+        return cs.saveIntoFile(path);
     }
 
     @GetMapping("/read")
