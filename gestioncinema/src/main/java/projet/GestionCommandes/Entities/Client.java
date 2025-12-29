@@ -35,7 +35,7 @@ public class Client implements Serializable{
 
     private String ville;
 
-    @OneToMany(mappedBy = "clients", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Commande> commandes;
 }

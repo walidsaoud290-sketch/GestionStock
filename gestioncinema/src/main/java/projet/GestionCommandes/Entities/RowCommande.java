@@ -32,11 +32,13 @@ public class RowCommande implements Serializable{
     private Product product;
 
     @Column(name = "prix_total")
-    private double prixTotal = quantite*product.getPrix();
+    private double prixTotal;
 
     public RowCommande(int quantite, Commande commande, Product product) {
         this.quantite = quantite;
         this.commande = commande;
         this.product = product;
+        // Avoid NPE when product is null; compute total when product is available
+        this.prixTotal = (product != null) ? quantite * product.getPrix() : 0;
     }
 }

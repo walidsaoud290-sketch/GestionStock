@@ -1,13 +1,10 @@
 package projet.GestionCommandes.Entities;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -42,6 +39,6 @@ public class Commande implements Serializable{
     @JsonIgnore
     private Client client;
 
-    @OneToMany(mappedBy = "commandes", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL)
     private List<RowCommande> lignes;
 }
