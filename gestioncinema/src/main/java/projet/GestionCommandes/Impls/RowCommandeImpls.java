@@ -13,8 +13,8 @@ import projet.GestionCommandes.threads.SaveIntoFile;
 
 @Service
 @AllArgsConstructor
-public class RowCommandeImpls implements RowCommandeService{
-    private RowCommandeRepository rcr;
+public class RowCommandeImpls implements RowCommandeService {
+	private RowCommandeRepository rcr;
 
 	@Override
 	public ResponseEntity displayAllRows() {
@@ -29,81 +29,84 @@ public class RowCommandeImpls implements RowCommandeService{
 
 	@Override
 	public ResponseEntity deleteRowCommandeById(Long id) {
-		if(rcr.existsById(id)){
+		if (rcr.existsById(id)) {
 			rcr.deleteById(id);
-			return ResponseEntity.ok("Deleted succssfuly id "+id);
+			return ResponseEntity.ok("Deleted succssfuly id " + id);
 		}
-		return ResponseEntity.status(404).body("doesnt existe id"+id);
+		return ResponseEntity.status(404).body("doesnt existe id" + id);
 	}
 
 	@Override
 	public ResponseEntity updateRowCommandes(Long id, RowCommande rowCommande) {
-		return rcr.findById(id).map(e->{
-            e.setCommande(rowCommande.getCommande());
-            e.setId(rowCommande.getId());
-            e.setProduct(rowCommande.getProduct());
-            e.setQuantite(rowCommande.getQuantite());
-            e.setPrixTotal(rowCommande.getPrixTotal());
+		return rcr.findById(id).map(e -> {
+			e.setCommande(rowCommande.getCommande());
+			e.setId(rowCommande.getId());
+			e.setProduct(rowCommande.getProduct());
+			e.setQuantite(rowCommande.getQuantite());
+			e.setPrixTotal(rowCommande.getPrixTotal());
 			rcr.save(e);
-            return (ResponseEntity) ResponseEntity.ok("Update successfuly Row Commande id :"+id);
-        }).orElse((ResponseEntity)ResponseEntity.status(404).body("doesnt existe rowCommande id :"+id));
+			return (ResponseEntity) ResponseEntity.ok("Update successfuly Row Commande id :" + id);
+		}).orElse((ResponseEntity) ResponseEntity.status(404).body("doesnt existe rowCommande id :" + id));
 	}
 
 	@Override
 	public ResponseEntity displayRowById(Long id) {
-		if(rcr.existsById(id)){
+		if (rcr.existsById(id)) {
 			return ResponseEntity.ok(rcr.findById(id).get());
 		}
-		return ResponseEntity.status(404).body("doesnt existe rowCommande id "+id);
+		return ResponseEntity.status(404).body("doesnt existe rowCommande id " + id);
 	}
 
 	@Override
 	public ResponseEntity sortRowCommandesByTotal(boolean isASC) {
 		List<RowCommande> rowCommandes;
-		if(isASC){
+		if (isASC) {
 			rowCommandes = rcr.findAll().stream().sorted(Comparator.comparing(RowCommande::getPrixTotal)).toList();
-		}else{
-			rowCommandes = rcr.findAll().stream().sorted(Comparator.comparing(RowCommande::getPrixTotal).reversed()).toList();	
+		} else {
+			rowCommandes = rcr.findAll().stream().sorted(Comparator.comparing(RowCommande::getPrixTotal).reversed())
+					.toList();
 		}
-		return rowCommandes.size()>0 ? ResponseEntity.ok(rowCommandes) : ResponseEntity.ok("the table rowCommande is empty");
+		return rowCommandes.size() > 0 ? ResponseEntity.ok(rowCommandes)
+				: ResponseEntity.ok("the table rowCommande is empty");
 	}
 
 	@Override
-    public ResponseEntity readFromFile(String path) {
-        try {
-            ReadFromFile readThread = new ReadFromFile(path);
-            readThread.start();
-            
-            // Attendre le résultat avec timeout (5 secondes)
-            List<Object> data = readThread.waitForResult();
-            
-            if (readThread.hasError()) {
-                return ResponseEntity.status(500)
-                    .body("Erreur lors de la lecture: " + readThread.getException().getMessage());
-            }
-            
-            // Traiter les données lues
-            if (data != null && !data.isEmpty()) {
-                // Supposons que vous sauvegardez les données dans la base
-                for (Object obj : data) {
-                    if (obj instanceof RowCommande) {
-                        rcr.save((RowCommande) obj);
-                    }
-                }
-                return ResponseEntity.ok("Données restaurées avec succès: " + data.size() + " éléments");
-            }
-            
-            	return ResponseEntity.ok("Fichier vide");
-            
-        	} catch (InterruptedException e) {
-            	Thread.currentThread().interrupt();
-            	return ResponseEntity.status(500)
-                	.body("Lecture interrompue: " + e.getMessage());
-        	} catch (Exception e) {
-            	return ResponseEntity.status(500)
-                	.body("Erreur: " + e.getMessage());
-        	}
-    	}
+	public ResponseEntity readFromFile(String path) {
+		try {
+			ReadFromFile readThread = new ReadFromFile(path);
+			readThread.start();
+
+			// Attendre le résultat avec timeout (5 secondes)
+			List<Object> data = readThread.waitForResult();
+
+			if (readThread.hasError()) {
+				return ResponseEntity.status(500)
+						.body("Erreur lors de la lecture: " + readThread.getException().getMessage());
+			}
+
+			// Traiter les données lues
+			if (data != null && !data.isEmpty()) {
+				// Supposons que vous sauvegardez les données dans la base
+				for (Object obj : data) {
+					if (obj instanceof RowCommande) {
+						// rcr.save((RowCommande) obj);
+						System.out.println(obj);
+					}
+				}
+				return ResponseEntity.ok("Données restaurées avec succès: " + data.size() + " éléments");
+			}
+
+			return ResponseEntity.ok("Fichier vide");
+
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return ResponseEntity.status(500)
+					.body("Lecture interrompue: " + e.getMessage());
+		} catch (Exception e) {
+			return ResponseEntity.status(500)
+					.body("Erreur: " + e.getMessage());
+		}
+	}
 
 	@Override
 	public ResponseEntity saveIntoFile(String path) {
@@ -111,24 +114,24 @@ public class RowCommandeImpls implements RowCommandeService{
 			List<RowCommande> rowCommandes = rcr.findAll();
 			SaveIntoFile saveThread = new SaveIntoFile(rowCommandes, path);
 			saveThread.start();
-			
+
 			// Attendre la fin de l'écriture avec timeout (5 secondes)
 			saveThread.waitForCompletion();
-			
+
 			if (saveThread.hasError()) {
 				return ResponseEntity.status(500)
-					.body("Erreur lors de l'écriture: " + saveThread.getException().getMessage());
+						.body("Erreur lors de l'écriture: " + saveThread.getException().getMessage());
 			}
-			
+
 			return ResponseEntity.ok("Données sauvegardées avec succès dans " + path);
-			
+
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			return ResponseEntity.status(500)
-				.body("Écriture interrompue: " + e.getMessage());
+					.body("Écriture interrompue: " + e.getMessage());
 		} catch (Exception e) {
 			return ResponseEntity.status(500)
-				.body("Erreur: " + e.getMessage());
+					.body("Erreur: " + e.getMessage());
 		}
 	}
 }

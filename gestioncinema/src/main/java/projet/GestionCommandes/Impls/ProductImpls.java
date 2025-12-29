@@ -14,14 +14,15 @@ import projet.GestionCommandes.Repositorys.ProductRepository;
 import projet.GestionCommandes.Services.ProductService;
 import projet.GestionCommandes.threads.ReadFromFile;
 import projet.GestionCommandes.threads.SaveIntoFile;
+
 @Service
-public class ProductImpls implements ProductService{
+public class ProductImpls implements ProductService {
 	@Autowired
-    private ProductRepository pr;
-	
-    public ProductImpls(ProductRepository pr){
-        this.pr=pr;
-    }
+	private ProductRepository pr;
+
+	public ProductImpls(ProductRepository pr) {
+		this.pr = pr;
+	}
 
 	@Override
 	public ResponseEntity createProduct(Product product) {
@@ -31,11 +32,11 @@ public class ProductImpls implements ProductService{
 
 	@Override
 	public ResponseEntity deleteProduct(Long id) {
-		if(pr.existsById(id)){
+		if (pr.existsById(id)) {
 			pr.deleteById(id);
-			return ResponseEntity.ok("Deleted product succssefuly with id "+id);
+			return ResponseEntity.ok("Deleted product succssefuly with id " + id);
 		}
-		return ResponseEntity.status(404).body("Product id not found "+id);
+		return ResponseEntity.status(404).body("Product id not found " + id);
 	}
 
 	@Override
@@ -44,70 +45,73 @@ public class ProductImpls implements ProductService{
 	}
 
 	@Override
-	public ResponseEntity updateProduct(Long id,Product product) {
-		return pr.findById(id).map(e->{
+	public ResponseEntity updateProduct(Long id, Product product) {
+		return pr.findById(id).map(e -> {
 			e.setId(id);
 			e.setLibelle(product.getLibelle());
 			e.setStock(product.getStock());
 			e.setPrix(product.getPrix());
 			e.setLignes(product.getLignes());
 			pr.save(e);
-			return (ResponseEntity) ResponseEntity.ok("Updated product successfuly id "+id);
-		}).orElse( (ResponseEntity) ResponseEntity.status(404).body("Not found product id "+id));
+			return (ResponseEntity) ResponseEntity.ok("Updated product successfuly id " + id);
+		}).orElse((ResponseEntity) ResponseEntity.status(404).body("Not found product id " + id));
 	}
 
 	@Override
 	public ResponseEntity sortByPrice(boolean isASC) {
 		List<Product> products;
-		if(isASC)
+		if (isASC)
 			products = pr.findAll().stream().sorted(Comparator.comparing(Product::getPrix)).toList();
 		else
 			products = pr.findAll().stream().sorted(Comparator.comparing(Product::getPrix).reversed()).toList();
-		return products.size()>0 ? ResponseEntity.ok(products) : ResponseEntity.status(404).body("List product is empty");
+		return products.size() > 0 ? ResponseEntity.ok(products)
+				: ResponseEntity.status(404).body("List product is empty");
 	}
 
 	@Override
 	public ResponseEntity displayProductById(Long id) {
 		Product product = pr.findById(id).orElse(null);
-		return product!=null ? ResponseEntity.ok(product) : ResponseEntity.status(404).body("Not found product id "+id);
+		return product != null ? ResponseEntity.ok(product)
+				: ResponseEntity.status(404).body("Not found product id " + id);
 	}
 
 	@Override
-    public ResponseEntity readFromFile(String path) {
-        try {
-            ReadFromFile readThread = new ReadFromFile(path);
-            readThread.start();
-            
-            // Attendre le résultat avec timeout (5 secondes)
-            List<Object> data = readThread.waitForResult();
-            
-            if (readThread.hasError()) {
-                return ResponseEntity.status(500)
-                    .body("Erreur lors de la lecture: " + readThread.getException().getMessage());
-            }
-            
-            // Traiter les données lues
-            if (data != null && !data.isEmpty()) {
-                // Supposons que vous sauvegardez les données dans la base
-                for (Object obj : data) {
-                    if (obj instanceof RowCommande) {
-                        pr.save((Product) obj);
-                    }
-                }
-                return ResponseEntity.ok("Données restaurées avec succès: " + data.size() + " éléments");
-            }
-            
-            	return ResponseEntity.ok("Fichier vide");
-            
-        	} catch (InterruptedException e) {
-            	Thread.currentThread().interrupt();
-            	return ResponseEntity.status(500)
-                	.body("Lecture interrompue: " + e.getMessage());
-        	} catch (Exception e) {
-            	return ResponseEntity.status(500)
-                	.body("Erreur: " + e.getMessage());
-        	}
-    	}
+	public ResponseEntity readFromFile(String path) {
+		try {
+			ReadFromFile readThread = new ReadFromFile(path);
+			readThread.start();
+
+			// Attendre le résultat avec timeout (5 secondes)
+			List<Object> data = readThread.waitForResult();
+
+			if (readThread.hasError()) {
+				return ResponseEntity.status(500)
+						.body("Erreur lors de la lecture: " + readThread.getException().getMessage());
+			}
+
+			// Traiter les données lues
+			if (data != null && !data.isEmpty()) {
+				// Supposons que vous sauvegardez les données dans la base
+				for (Object obj : data) {
+					if (obj instanceof RowCommande) {
+						// pr.save((Product) obj);
+						System.out.println(obj);
+					}
+				}
+				return ResponseEntity.ok("Données restaurées avec succès: " + data.size() + " éléments");
+			}
+
+			return ResponseEntity.ok("Fichier vide");
+
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return ResponseEntity.status(500)
+					.body("Lecture interrompue: " + e.getMessage());
+		} catch (Exception e) {
+			return ResponseEntity.status(500)
+					.body("Erreur: " + e.getMessage());
+		}
+	}
 
 	@Override
 	public ResponseEntity saveIntoFile(String path) {
@@ -115,24 +119,24 @@ public class ProductImpls implements ProductService{
 			List<Product> products = pr.findAll();
 			SaveIntoFile saveThread = new SaveIntoFile(products, path);
 			saveThread.start();
-			
+
 			// Attendre la fin de l'écriture avec timeout (5 secondes)
 			saveThread.waitForCompletion();
-			
+
 			if (saveThread.hasError()) {
 				return ResponseEntity.status(500)
-					.body("Erreur lors de l'écriture: " + saveThread.getException().getMessage());
+						.body("Erreur lors de l'écriture: " + saveThread.getException().getMessage());
 			}
-			
+
 			return ResponseEntity.ok("Données sauvegardées avec succès dans " + path);
-			
+
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			return ResponseEntity.status(500)
-				.body("Écriture interrompue: " + e.getMessage());
+					.body("Écriture interrompue: " + e.getMessage());
 		} catch (Exception e) {
 			return ResponseEntity.status(500)
-				.body("Erreur: " + e.getMessage());
+					.body("Erreur: " + e.getMessage());
 		}
 	}
 }
