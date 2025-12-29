@@ -5,7 +5,7 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-// alaaaaaaaaeeeeeeee
+// waliiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiid
 public class ReadThread extends Thread {
     private String path;
     private List<Object> result;
