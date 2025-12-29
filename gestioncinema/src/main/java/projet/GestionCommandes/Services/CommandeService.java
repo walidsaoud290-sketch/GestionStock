@@ -10,7 +10,6 @@ import projet.GestionCommandes.Entities.Commande;
 public interface CommandeService {
     ResponseEntity createCommande(Commande commande);
     ResponseEntity deleteCommandeById(Long id);
-    void saviInFile(String path);
     ResponseEntity getByStatus(String status);
     ResponseEntity updateCommande(Long id,Commande commande);
     List<Commande> displayAllCommandes();
