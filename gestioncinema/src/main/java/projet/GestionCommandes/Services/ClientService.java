@@ -14,6 +14,6 @@ public interface ClientService {
     ResponseEntity deleteClient(Long id);
     ResponseEntity getClientsByVille(String ville);
     ResponseEntity getClientByEmail(String email);
-    ResponseEntity saviInFile(String path);
     ResponseEntity readFromFile(String path);
+    ResponseEntity saveIntoFile(String path);
 }
