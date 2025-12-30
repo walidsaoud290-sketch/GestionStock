@@ -1,14 +1,15 @@
 package projet.GestionCommandes.Impls;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import projet.GestionCommandes.Entities.Commande;
-import projet.GestionCommandes.Entities.RowCommande;
 import projet.GestionCommandes.Repositorys.CommandeRepository;
 import projet.GestionCommandes.Services.CommandeService;
+import projet.GestionCommandes.dto.CommandeDTO;
 import projet.GestionCommandes.threads.ReadFromFile;
 import projet.GestionCommandes.threads.SaveIntoFile;
 
@@ -79,7 +80,6 @@ public class CommandeImpls implements CommandeService {
 			ReadFromFile readThread = new ReadFromFile(path);
 			readThread.start();
 
-			// Attendre le résultat avec timeout (5 secondes)
 			List<Object> data = readThread.waitForResult();
 
 			if (readThread.hasError()) {
@@ -87,16 +87,16 @@ public class CommandeImpls implements CommandeService {
 						.body("Erreur lors de la lecture: " + readThread.getException().getMessage());
 			}
 
-			// Traiter les données lues
+			// Traiter les données lues (DTOs maintenant)
 			if (data != null && !data.isEmpty()) {
-				// Supposons que vous sauvegardez les données dans la base
+				String builder = "";
+				
 				for (Object obj : data) {
-					if (obj instanceof RowCommande) {
-						// cr.save((Commande) obj);
-						System.out.println(obj);
-					}
+					// Les objets ===> DTOs
+					builder += obj.toString() + "\n";
 				}
-				return ResponseEntity.ok("Données restaurées avec succès: " + data.size() + " éléments");
+				
+				return ResponseEntity.ok(builder.isEmpty() ? "Aucune donnée trouvée" : builder);
 			}
 
 			return ResponseEntity.ok("Fichier vide");
@@ -115,10 +115,15 @@ public class CommandeImpls implements CommandeService {
 	public ResponseEntity saveIntoFile(String path) {
 		try {
 			List<Commande> commandes = cr.findAll();
-			SaveIntoFile saveThread = new SaveIntoFile(commandes, path);
+			// Convertir en DTOs
+			List<CommandeDTO> dtos = commandes.stream()
+				.map(CommandeDTO::new)
+				.collect(Collectors.toList());
+			
+			SaveIntoFile saveThread = new SaveIntoFile(dtos, path);
 			saveThread.start();
 
-			// Attendre la fin de l'écriture avec timeout (5 secondes)
+			// Attendre la fin de l'écriture
 			saveThread.waitForCompletion();
 
 			if (saveThread.hasError()) {

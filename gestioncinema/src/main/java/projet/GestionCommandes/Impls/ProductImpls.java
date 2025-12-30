@@ -2,15 +2,16 @@ package projet.GestionCommandes.Impls;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import projet.GestionCommandes.Entities.Product;
-import projet.GestionCommandes.Entities.RowCommande;
 import projet.GestionCommandes.Repositorys.ProductRepository;
 import projet.GestionCommandes.Services.ProductService;
+import projet.GestionCommandes.dto.ProduitDTO;
 import projet.GestionCommandes.threads.ReadFromFile;
 import projet.GestionCommandes.threads.SaveIntoFile;
 @Service
@@ -77,7 +78,7 @@ public class ProductImpls implements ProductService{
             ReadFromFile readThread = new ReadFromFile(path);
             readThread.start();
             
-            // Attendre le résultat avec timeout (5 secondes)
+            // Attendre le résultat
             List<Object> data = readThread.waitForResult();
             
             if (readThread.hasError()) {
@@ -85,37 +86,43 @@ public class ProductImpls implements ProductService{
                     .body("Erreur lors de la lecture: " + readThread.getException().getMessage());
             }
             
-            // Traiter les données lues
+            // Traiter les données lues (DTOs maintenant)
             if (data != null && !data.isEmpty()) {
-                // Supposons que vous sauvegardez les données dans la base
+                String builder = "";
+                
                 for (Object obj : data) {
-                    if (obj instanceof RowCommande) {
-                        pr.save((Product) obj);
-                    }
+                    // Les objets sont maintenant des DTOs
+                    builder += obj.toString() + "\n";
                 }
-                return ResponseEntity.ok("Données restaurées avec succès: " + data.size() + " éléments");
+                
+                return ResponseEntity.ok(builder.isEmpty() ? "Aucune donnée trouvée" : builder);
             }
             
-            	return ResponseEntity.ok("Fichier vide");
+            return ResponseEntity.ok("Fichier vide");
             
-        	} catch (InterruptedException e) {
-            	Thread.currentThread().interrupt();
-            	return ResponseEntity.status(500)
-                	.body("Lecture interrompue: " + e.getMessage());
-        	} catch (Exception e) {
-            	return ResponseEntity.status(500)
-                	.body("Erreur: " + e.getMessage());
-        	}
-    	}
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(500)
+                .body("Lecture interrompue: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                .body("Erreur: " + e.getMessage());
+        }
+    }
 
 	@Override
 	public ResponseEntity saveIntoFile(String path) {
 		try {
 			List<Product> products = pr.findAll();
-			SaveIntoFile saveThread = new SaveIntoFile(products, path);
+			// Convertir en DTOs
+			List<ProduitDTO> dtos = products.stream()
+				.map(ProduitDTO::new)
+				.collect(Collectors.toList());
+			
+			SaveIntoFile saveThread = new SaveIntoFile(dtos, path);
 			saveThread.start();
 			
-			// Attendre la fin de l'écriture avec timeout (5 secondes)
+			// Attendre la fin de l'écriture
 			saveThread.waitForCompletion();
 			
 			if (saveThread.hasError()) {
