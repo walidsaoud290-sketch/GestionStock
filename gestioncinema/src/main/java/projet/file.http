@@ -1,4 +1,7 @@
+/// ============ TABLE CLIENT ============
 @base_url = http://localhost:8099/commande
+# creation d'une commande
+###
 POST {{base_url}}/create
 Content-Type: application/json
 
@@ -11,6 +14,7 @@ Content-Type: application/json
   "lignes": []
 }
 
+# mise a jour d'une commande
 ###
 PUT {{base_url}}/update/5
 Content-Type: application/json
@@ -20,16 +24,167 @@ Content-Type: application/json
     "status": "EN_COURS",
     "lignes": []
 }
+
+# suppression d'une commande
 ###
 DELETE {{base_url}}/delete/8
+
+# save les commandes dans un fichier
 ###
 GET {{base_url}}/save?path=C:\Users\HP\Desktop\ProjetCinema\gestioncinema\src\clients.txt
+
+# suppression d'une basent sur l'id
 ### 
 DELETE  {{base_url}}/delete/1
+
+# liste des commandes
 ###
 GET {{base_url}}/list
 
 
-/// table client
-### 
+/// ============ TABLE CLIENT ============
+###
+# Liste de tous les clients
 GET http://localhost:8099/client/list
+
+###
+# Afficher un client par ID
+GET http://localhost:8099/client/list/1
+
+###
+# Créer un nouveau client
+POST http://localhost:8099/client/create
+Content-Type: application/json
+
+{
+  "nom_client": "Sick fork",
+  "email": "rock.benali@example.com",
+  "ville": "algeria"
+}
+
+###
+# Mettre à jour un client
+PUT http://localhost:8099/client/update/1
+Content-Type: application/json
+
+{
+  "nom_client": "Ahmed Ben Ali - Updated",
+  "email": "ahmed.updated@example.com",
+  "ville": "Sfax"
+}
+
+###
+# Supprimer un client
+DELETE http://localhost:8099/client/delete/1
+
+###
+# Rechercher clients par ville
+GET http://localhost:8099/client/ville?ville=Sfax
+
+###
+# Rechercher client par email
+GET http://localhost:8099/client/email?email=ahmed.updated@example.com
+
+###
+# Sauvegarder les clients dans un fichier
+GET http://localhost:8099/client/save?path=C:\Users\HP\Desktop\clients.txt
+
+###
+# Lire les clients depuis un fichier
+GET http://localhost:8099/client/read?path=C:\Users\HP\Desktop\clients.txt
+
+
+/// ============ TABLE PRODUCT ============
+###
+# Liste de tous les produits
+GET http://localhost:8099/product/list
+
+###
+# Afficher un produit par ID
+GET http://localhost:8099/product/list/1
+
+###
+# Créer un nouveau produit
+POST http://localhost:8099/product/create
+Content-Type: application/json
+
+{
+  "nom": "Laptop Dell",
+  "prix": 2500.00,
+  "quantite_stock": 10
+}
+
+###
+# Mettre à jour un produit
+PUT http://localhost:8099/product/update/1
+Content-Type: application/json
+
+{
+  "nom": "Laptop HP",
+  "prix": 2800.00,
+  "quantite_stock": 15
+}
+
+###
+# Trier les produits par prix (croissant: etat=1, décroissant: etat=0)
+GET http://localhost:8099/product/sort?etat=1
+
+###
+# Sauvegarder les produits dans un fichier
+GET http://localhost:8099/product/save?path=C:\Users\HP\Desktop\produits.txt
+
+
+/// ============ TABLE ROWCOMMANDE (Lignes de commande) ============
+###
+# Liste de toutes les lignes de commande
+GET http://localhost:8099/rowCommande/list
+
+###
+# Afficher une ligne de commande par ID
+GET http://localhost:8099/rowCommande/list/1
+
+###
+# Créer une nouvelle ligne de commande
+POST http://localhost:8099/rowCommande/create
+Content-Type: application/json
+
+{
+  "quantite": 3,
+  "commande": {
+    "id": 1
+  },
+  "product": {
+    "id": 1
+  }
+}
+
+###
+# Mettre à jour une ligne de commande
+PUT http://localhost:8099/rowCommande/update/1
+Content-Type: application/json
+
+{
+  "quantite": 5,
+  "commande": {
+    "id": 1
+  },
+  "product": {
+    "id": 1
+  }
+}
+
+###
+# Supprimer une ligne de commande
+DELETE http://localhost:8099/rowCommande/delete/1
+
+###
+# Trier les lignes par prix total (croissant: etat=1, décroissant: etat=0)
+GET http://localhost:8099/rowCommande/sort/1
+
+###
+# Sauvegarder les lignes dans un fichier
+GET http://localhost:8099/rowCommande/save?path=C:\Users\HP\Desktop\rowcommandes.txt
+
+###
+# Lire les lignes depuis un fichier
+GET http://localhost:8099/rowCommande/read?path=C:\Users\HP\Desktop\rowcommandes.txt

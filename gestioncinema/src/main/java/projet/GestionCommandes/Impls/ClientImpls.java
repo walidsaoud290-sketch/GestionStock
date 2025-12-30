@@ -1,14 +1,20 @@
 package projet.GestionCommandes.Impls;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.hibernate.Hibernate;
 
 import projet.GestionCommandes.Entities.Client;
 import projet.GestionCommandes.Entities.RowCommande;
 import projet.GestionCommandes.Repositorys.ClientRepository;
 import projet.GestionCommandes.Services.ClientService;
+import projet.GestionCommandes.dto.ClientDTO;
 import projet.GestionCommandes.threads.ReadFromFile;
 import projet.GestionCommandes.threads.SaveIntoFile;
 @Service
@@ -103,7 +109,7 @@ public class ClientImpls implements ClientService{
             ReadFromFile readThread = new ReadFromFile(path);
             readThread.start();
             
-            // Attendre le résultat avec timeout (5 secondes)
+            // Attendre le résultat
             List<Object> data = readThread.waitForResult();
             
             if (readThread.hasError()) {
@@ -111,34 +117,40 @@ public class ClientImpls implements ClientService{
                     .body("Erreur lors de la lecture: " + readThread.getException().getMessage());
             }
             
-            // Traiter les données lues
+            // Traiter les données lues (DTOs maintenant)
             if (data != null && !data.isEmpty()) {
-                // Supposons que vous sauvegardez les données dans la base
+                String builder = "";
+                
                 for (Object obj : data) {
-                    if (obj instanceof RowCommande) {
-                        cr.save((Client) obj);
-                    }
+                    // Les objets sont maintenant des DTOs, pas besoin de re-fetch
+                    builder += obj.toString() + "\n";
                 }
-                return ResponseEntity.ok("Données restaurées avec succès: " + data.size() + " éléments");
+                
+                return ResponseEntity.ok(builder.isEmpty() ? "Aucune donnée trouvée" : builder);
             }
             
-            	return ResponseEntity.ok("Fichier vide");
+            return ResponseEntity.ok("Fichier vide");
             
-        	} catch (InterruptedException e) {
-            	Thread.currentThread().interrupt();
-            	return ResponseEntity.status(500)
-                	.body("Lecture interrompue: " + e.getMessage());
-        	} catch (Exception e) {
-            	return ResponseEntity.status(500)
-                	.body("Erreur: " + e.getMessage());
-        	}
-    	}
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(500)
+                .body("Lecture interrompue: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                .body("Erreur: " + e.getMessage());
+        }
+    }
         @Override
     public ResponseEntity saveIntoFile(String path) {
         try {
             List<Client> clients = cr.findAll();
-            SaveIntoFile saveThread = new SaveIntoFile(clients, path);
+            List<ClientDTO> dtos = clients.stream()
+            .map(ClientDTO::new)
+            .collect(Collectors.toList());
+            SaveIntoFile saveThread = new SaveIntoFile(dtos, path);
             saveThread.start();
+
+            
             
             // Attendre la fin de l'écriture avec timeout (5 secondes)
             saveThread.waitForCompletion();
